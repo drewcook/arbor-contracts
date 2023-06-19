@@ -1,17 +1,17 @@
 //SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import "@semaphore-protocol/contracts/interfaces/IVerifier.sol";
-import "@semaphore-protocol/contracts/interfaces/ISemaphore.sol";
-import "@semaphore-protocol/contracts/base/SemaphoreCore.sol";
-import "@semaphore-protocol/contracts/base/SemaphoreGroups.sol";
-import "@openzeppelin/contracts/utils/Counters.sol";
-import "@openzeppelin/contracts/utils/math/SafeMath.sol";
+import {Semaphore} from "@semaphore/Semaphore.sol";
+import {SemaphoreGroups} from "@semaphore/base/SemaphoreGroups.sol";
+import "@semaphore/interfaces/ISemaphoreVerifier.sol";
+import "@semaphore/interfaces/ISemaphore.sol";
+import {Counters} from "@openzeppelin/utils/Counters.sol";
+import {SafeMath} from "@openzeppelin/utils/math/SafeMath.sol";
 
 /// @title StemQueue contract.
 /// @dev The following code is just a example to show how Semaphore con be used.
 /// @dev StemQueue holds the votes around the stems within each project's stem queue
-contract StemQueue is SemaphoreCore, SemaphoreGroups {
+contract StemQueue is Semaphore, SemaphoreGroups {
     using SafeMath for uint256;
     using Counters for Counters.Counter;
 

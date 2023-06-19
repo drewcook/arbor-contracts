@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "@openzeppelin/contracts/utils/Counters.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/utils/math/SafeMath.sol";
+import "@openzeppelin/access/Ownable.sol";
+import "@openzeppelin/token/ERC721/ERC721.sol";
+import "@openzeppelin/utils/Counters.sol";
+import "@openzeppelin/utils/math/SafeMath.sol";
 
 contract ArborProtocol is ERC721, Ownable {
     using SafeMath for uint256;
