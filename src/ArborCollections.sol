@@ -1,14 +1,13 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0;
+pragma solidity ^0.8.0;
 
 import "@openzeppelin/access/Ownable.sol";
 import "@openzeppelin/token/ERC721/ERC721.sol";
 import "@openzeppelin/utils/Counters.sol";
-import "@openzeppelin/utils/math/SafeMath.sol";
 
-contract ArborProtocol is ERC721, Ownable {
-    using SafeMath for uint256;
+contract ArborCollections is ERC721, Ownable {
     using Counters for Counters.Counter;
+
     Counters.Counter private _tokenIds;
 
     // Fields
@@ -20,18 +19,9 @@ contract ArborProtocol is ERC721, Ownable {
     event TokenCreated(uint256 _tokenId, string _tokenURI);
     event ListedForSale(address _lister, uint256 _tokenId, uint256 _price);
     event RemovedForSale(address _lister, uint256 _tokenId);
-    event NftBought(
-        uint256 _tokenId,
-        address _seller,
-        address _buyer,
-        uint256 _price
-    );
+    event NftBought(uint256 _tokenId, address _seller, address _buyer, uint256 _price);
     event SellerPaid(uint256 _tokenId, uint256 _price);
-    event RoyaltiesPaid(
-        uint256 _tokenId,
-        uint256 _price,
-        address[] _contributors
-    );
+    event RoyaltiesPaid(uint256 _tokenId, uint256 _price, address[] _contributors);
 
     // Mapping of tokenIDs to their current data points
     mapping(uint256 => string) tokenIdToUri;
@@ -45,38 +35,25 @@ contract ArborProtocol is ERC721, Ownable {
         emit CollectionNameUpdated(_name);
     }
 
-    function getContributors(
-        uint256 tokenId
-    ) public view returns (address[] memory) {
-        require(
-            _exists(tokenId),
-            "ERC721: Contributor query for nonexistent token"
-        );
+    function getContributors(uint256 tokenId) public view returns (address[] memory) {
+        require(_exists(tokenId), "ERC721: Contributor query for nonexistent token");
 
         return tokenIdToContributors[tokenId];
     }
 
-    function tokenURI(
-        uint256 tokenId
-    ) public view override returns (string memory) {
-        require(
-            _exists(tokenId),
-            "ERC721Metadata: URI query for nonexistent token"
-        );
+    function tokenURI(uint256 tokenId) public view override returns (string memory) {
+        require(_exists(tokenId), "ERC721Metadata: URI query for nonexistent token");
         return tokenIdToUri[tokenId];
     }
 
     // Both mints a new token and pays out value equally to stem contributors
-    function mintAndBuy(
-        address _buyer,
-        string calldata _metadataURI,
-        address payable[] calldata _contributors
-    ) public payable returns (uint256, string memory) {
+    function mintAndBuy(address _buyer, string calldata _metadataURI, address payable[] calldata _contributors)
+        public
+        payable
+        returns (uint256, string memory)
+    {
         // Require sender is paying the mint price
-        require(
-            msg.value >= mintPrice,
-            "Sent ether value is not enough to mint"
-        );
+        require(msg.value >= mintPrice, "Sent ether value is not enough to mint");
 
         // Update local state
         // Auto-increment, also we can start minting from 1 instead of 0
@@ -152,8 +129,8 @@ contract ArborProtocol is ERC721, Ownable {
         // Make the transfer of funds from sale price
         // 10% - Royalties to all contributors, evenly split
         // 90% - Sale proceeds to seller
-        uint256 royaltiesCut = msg.value.div(10);
-        uint256 sellersCut = msg.value.div(10).mul(9);
+        uint256 royaltiesCut = msg.value / 10;
+        uint256 sellersCut = (msg.value / 10) * 9;
         address[] storage contributors = tokenIdToContributors[_tokenId];
 
         // Payout out royalties evently amongst contributors

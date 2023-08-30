@@ -43,10 +43,4 @@ ifeq ($(findstring --network sepolia,$(ARGS)),--network sepolia)
 endif
 
 deploy:
-	@forge script script/DeployFundMe.s.sol:DeployFundMe $(NETWORK_ARGS)
-
-fund:
-	@forge script script/Interactions.s.sol:FundFundMe $(NETWORK_ARGS)
-
-withdraw:
-	@forge script script/Interactions.s.sol:WithdrawFundMe $(NETWORK_ARGS)
+	@forge script script/DeployArborCollections.s.sol:DeployArborCollections $(NETWORK_ARGS)

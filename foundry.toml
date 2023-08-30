@@ -6,7 +6,8 @@ remappings = [
 	"@openzeppelin=lib/openzeppelin-contracts/contracts",
 	"@openzeppelin/contracts=lib/openzeppelin-contracts/contracts",
 	"@semaphore=lib/semaphore/packages/contracts/contracts",
-	"@zk-kit/incremental-merkle-tree.sol=lib/zk-kit/packages/incremental-merkle-tree.sol/contracts"
+	"@zk-kit/incremental-merkle-tree.sol=lib/zk-kit/packages/incremental-merkle-tree.sol/contracts",
+	"poseidon-solidity/=lib/poseidon/"
 ]
 
 # See more config options https://github.com/foundry-rs/foundry/tree/master/config

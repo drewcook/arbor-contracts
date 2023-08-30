@@ -1,18 +1,17 @@
 //SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0;
+pragma solidity ^0.8.0;
 
 import {Semaphore} from "@semaphore/Semaphore.sol";
 import {SemaphoreGroups} from "@semaphore/base/SemaphoreGroups.sol";
-import "@semaphore/interfaces/ISemaphoreVerifier.sol";
-import "@semaphore/interfaces/ISemaphore.sol";
+import {ISemaphoreVerifier} from "@semaphore/interfaces/ISemaphoreVerifier.sol";
+import {ISemaphore} from "@semaphore/interfaces/ISemaphore.sol";
 import {Counters} from "@openzeppelin/utils/Counters.sol";
 import {SafeMath} from "@openzeppelin/utils/math/SafeMath.sol";
 
 /// @title StemQueue contract.
 /// @dev The following code is just a example to show how Semaphore con be used.
 /// @dev StemQueue holds the votes around the stems within each project's stem queue
-contract StemQueue is Semaphore, SemaphoreGroups {
-    using SafeMath for uint256;
+contract StemQueue is Semaphore.SemaphoreGroups {
     using Counters for Counters.Counter;
 
     // Local counter to keep track of groups
@@ -45,19 +44,12 @@ contract StemQueue is Semaphore, SemaphoreGroups {
     /// @param groupId: Id of the group.
     /// @param oldAdmin: Old admin of the group.
     /// @param newAdmin: New admin of the group.
-    event GroupAdminUpdated(
-        uint256 indexed groupId,
-        address indexed oldAdmin,
-        address indexed newAdmin
-    );
+    event GroupAdminUpdated(uint256 indexed groupId, address indexed oldAdmin, address indexed newAdmin);
 
     /// @dev Checks if the group admin is the transaction sender.
     /// @param groupId: Id of the group.
     modifier onlyGroupAdmin(uint256 groupId) {
-        require(
-            groupAdmins[groupId] == _msgSender(),
-            "Semaphore: caller is not the group admin"
-        );
+        require(groupAdmins[groupId] == _msgSender(), "Semaphore: caller is not the group admin");
         _;
     }
 
@@ -73,11 +65,7 @@ contract StemQueue is Semaphore, SemaphoreGroups {
     /// @dev Allow anyone to create a new group
     /// @param depth: Depth of the tree.
     /// @param zeroValue: Zero value of the tree.
-    function createProjectGroup(
-        uint8 depth,
-        uint256 zeroValue,
-        address admin
-    ) external {
+    function createProjectGroup(uint8 depth, uint256 zeroValue, address admin) external {
         // Increment groupId then use
         _currentGroupId.increment();
         uint256 groupId = _currentGroupId.current();
@@ -89,10 +77,7 @@ contract StemQueue is Semaphore, SemaphoreGroups {
     /// @dev Allow anyone to add themselves to ta group
     /// @param groupId: Id of the group.
     /// @param identityCommitment: The identity commitment for the voter
-    function addMemberToProjectGroup(
-        uint256 groupId,
-        uint256 identityCommitment
-    ) external {
+    function addMemberToProjectGroup(uint256 groupId, uint256 identityCommitment) external {
         _addMember(groupId, identityCommitment);
     }
 
@@ -109,12 +94,7 @@ contract StemQueue is Semaphore, SemaphoreGroups {
         uint256[] calldata proofSiblings,
         uint8[] calldata proofPathIndices
     ) external onlyGroupAdmin(groupId) {
-        _removeMember(
-            groupId,
-            identityCommitment,
-            proofSiblings,
-            proofPathIndices
-        );
+        _removeMember(groupId, identityCommitment, proofSiblings, proofPathIndices);
     }
 
     /// @dev Only users who create valid proofs can vote.
@@ -127,20 +107,10 @@ contract StemQueue is Semaphore, SemaphoreGroups {
         uint256 _nullifierHash,
         uint256[8] calldata _proof
     ) external {
-        require(
-            !nullifierHashes[_nullifierHash],
-            "You can not use the same nullifier twice"
-        );
+        require(!nullifierHashes[_nullifierHash], "You can not use the same nullifier twice");
 
         uint256 root = getMerkleTreeRoot(groupId);
-        _verifyProof(
-            _vote,
-            root,
-            _nullifierHash,
-            externalNullifier,
-            _proof,
-            verifier
-        );
+        _verifyProof(_vote, root, _nullifierHash, externalNullifier, _proof, verifier);
 
         // Prevent double-voting (nullifierHash = hash(stemId + identityNullifier)).
         // Every user can vote once.
